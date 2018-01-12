@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" template="template.xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:tb="http://xmlns.jcp.org/jsf/composite/tbcomp"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+	<div style="height: 100%">
+		<h:form id="formListagem">
+			<p:panel header="Bancos">
+				<p:dataTable emptyMessage="Nenhum registro encontrado."
+					paginator="true" rows="10" value="#{bancoBean.bancos}" var="banco"
+					id="tabela">
+					<f:facet name="header">
+						<p:commandButton value="Novo" oncomplete="PF('dialogo').show();"
+							actionListener="#{bancoBean.novo}" update=":formCadastro:painel">
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+					</f:facet>
+
+					<p:column headerText="Nome" sortBy="#{banco.nome}"
+						filterBy="#{banco.nome}" filterMatchMode="contains">
+						<h:outputText value="#{banco.nome}" />
+					</p:column>
+
+					<p:column headerText="Sigla" sortBy="#{banco.sigla}"
+						filterBy="#{banco.sigla}" filterMatchMode="contains">
+						<h:outputText value="#{banco.sigla}" />
+					</p:column>
+
+					<p:column headerText="Ativo" sortBy="#{banco.ativoFormatado}">
+						<h:outputText value="#{banco.ativoFormatado}" />
+					</p:column>
+
+					<p:column headerText="Opções">
+						<p:commandButton icon="ui-icon-pencil"
+							oncomplete="PF('dialogo').show();"
+							actionListener="#{bancoBean.editar}"
+							update=":formCadastro:painel">
+							<f:attribute value="#{banco}" name="bancoSelecionado" />
+							<f:actionListener
+								type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+						</p:commandButton>
+						<p:commandButton icon="ui-icon-trash"
+							actionListener="#{bancoBean.excluir}"
+							update=":mensagem :formListagem:tabela">
+							<p:confirm header="Confirmação" message="Confirma exclusão?"
+								icon="ui-icon-alert" />
+							<f:attribute value="#{banco}" name="bancoSelecionado" />
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+				<p:confirmDialog global="true">
+					<p:commandButton value="Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" type="button" icon="ui-icon-close"
+						styleClass="ui-confirmdialog-no" />
+				</p:confirmDialog>
+			</p:panel>
+		</h:form>
+
+		<p:dialog header="Bancos - Cadastro" widgetVar="dialogo"
+			draggable="false" resizable="false" modal="true" closable="false">
+			<h:form id="formCadastro">
+				<h:panelGrid id="painel" columns="2">
+					<p:outputLabel value="Nome:" />
+					<p:inputText maxlength="100" size="30"
+						value="#{bancoBean.banco.nome}" required="true"
+						requiredMessage="Nome é obrigatório." />
+
+					<p:outputLabel value="Sigla:" />
+					<p:inputText maxlength="50" size="10"
+						value="#{bancoBean.banco.sigla}" required="true"
+						requiredMessage="Sigla é obrigatório." />
+
+					<p:outputLabel for="ativo" value="Ativo:" />
+					<p:selectBooleanCheckbox id="ativo"
+						value="#{bancoBean.banco.ativo}" required="true"
+						requiredMessage="O campo 'Ativo' é obrigatório" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Salvar"
+						actionListener="#{bancoBean.salvar}"
+						update=":mensagem :formCadastro:painel :formListagem:tabela" />
+					<p:commandButton value="Fechar" oncomplete="PF('dialogo').hide();" />
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+	</div>
+</ui:composition>
+
